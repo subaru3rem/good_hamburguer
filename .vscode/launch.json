@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net6.0/good_hamburguer.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "hotReload": true, // Habilita o Hot Reload no Debug
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "DOTNET_WATCH_ITERATIVE_COMPILATION": "1"
+            }
+        }
+    ]
+}
