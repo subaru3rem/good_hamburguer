@@ -95,16 +95,17 @@ namespace good_hamburguer.dados
         public List<Item> ObterCardapio()
         {
             var conexao = new Conexao();
-            string query = "SELECT id_item AS id, nome_produto AS produto, valor_unitario AS valor FROM itens";
+            string query = "SELECT id_item AS id, nome_produto AS produto, valor_unitario as valor, categoria FROM itens";
 
             return conexao.GetData<Item>(query);
         }
+        
         public Pedido InserirPedido(Pedido pedido)
         {
             pedido = CalcularDesconto(pedido);
 
             var conexao = new Conexao();
-            string insertPedidoQuery = $"INSERT INTO pedidos (endereco_entrega, numero_celular_cliente, valor_total, desconto, valor_total_sem_desconto) VALUES ('{pedido.endereco_entrega}', '{pedido.numero_celular_cliente}', {pedido.valor_total}, {pedido.desconto}, {pedido.valor_total_sem_desconto}) RETURNING id_pedido";
+            string insertPedidoQuery = $"INSERT INTO pedidos (endereco_entrega, numero_celular_cliente, valor_total, desconto, valor_total_sem_desconto, cancelado) VALUES ('{pedido.endereco_entrega}', '{pedido.numero_celular_cliente}', {pedido.valor_total}, {pedido.desconto}, {pedido.valor_total_sem_desconto}, '0') RETURNING id_pedido";
             int idPedido = conexao.ExecuteScalar<int>(insertPedidoQuery);
 
             if (idPedido == 0)
@@ -125,6 +126,8 @@ namespace good_hamburguer.dados
         {
             double valorTotal = pedido.itens.Sum(i => i.valor);
             pedido.desconto = 0; // É uma boa prática inicializar o desconto.
+            pedido.valor_total = valorTotal; // Inicializa o valor total antes de aplicar o desconto.
+            pedido.valor_total_sem_desconto = valorTotal; // Inicializa o valor total sem desconto.
 
             if (pedido.itens.Count < 2)
                 return pedido;
@@ -151,7 +154,7 @@ namespace good_hamburguer.dados
         public List<Pedido> ObterPedidos()
         {
             var conexao = new Conexao();
-            string query = "SELECT id_pedido AS numpedido, cancelado, endereco_entrega, numero_celular_cliente, valor_total, desconto, valor_total_sem_desconto FROM pedidos";
+            string query = "SELECT id_pedido AS numpedido, cancelado, endereco_entrega, numero_celular_cliente, valor_total, desconto, valor_total_sem_desconto FROM pedidos WHERE cancelado = '0'";
 
             List<Pedido> pedidos = conexao.GetData<Pedido>(query);
 
@@ -169,7 +172,7 @@ namespace good_hamburguer.dados
             return conexao.GetData<Item>(query);
         }
     
-        public Pedido ObterPedido(int numpedido)
+        public Pedido? ObterPedido(int numpedido)
         {
             var conexao = new Conexao();
             string query = $"SELECT id_pedido AS numpedido, cancelado, endereco_entrega, numero_celular_cliente, valor_total, desconto, valor_total_sem_desconto FROM pedidos WHERE id_pedido = {numpedido}";
@@ -177,7 +180,7 @@ namespace good_hamburguer.dados
             List<Pedido> pedidos = conexao.GetData<Pedido>(query);
 
             if (pedidos.Count == 0)
-                throw new Exception("Pedido não encontrado");
+                return null;
 
             Pedido pedido = pedidos[0];
             pedido.itens = ObterItensPedido(pedido.numpedido);
@@ -208,7 +211,7 @@ namespace good_hamburguer.dados
         public void CancelarPedido(int numpedido)
         {
             var conexao = new Conexao();
-            string deletePedidoQuery = $"UPDATE pedidos SET cancelado = 1 WHERE id_pedido = {numpedido}";
+            string deletePedidoQuery = $"UPDATE pedidos SET cancelado = '1' WHERE id_pedido = {numpedido}";
             conexao.ExecuteScalar<int>(deletePedidoQuery);
         }
     
