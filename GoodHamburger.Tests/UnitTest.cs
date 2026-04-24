@@ -181,6 +181,6 @@ public class PedidoCrudTests : IClassFixture<WebApplicationFactory<Program>>
         var errorContent = await response.Content.ReadAsStringAsync();
         
         // A API lança `throw new Exception("Pedido não encontrado")` e o ASP.NET converte isso num erro 500 genérico.
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound, $"porque a API lança uma Exception não tratada ao invés de retornar NotFound. Resposta: {errorContent}");
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound, $"Api lança um notfound quando o pedido não existe. Resposta: {errorContent}");
     }
 }
