@@ -14,7 +14,10 @@ CREATE TABLE
 		data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		endereco_entrega VARCHAR(255) NOT NULL,
 		numero_celular_cliente VARCHAR(20) NOT NULL,
-		valor_total DECIMAL(10, 2) NOT NULL
+		valor_total DECIMAL(10, 2) NOT NULL,
+		cancelado BOOLEAN DEFAULT FALSE,
+		desconto DECIMAL(10, 2) NOT NULL,
+		valor_total_sem_desconto DECIMAL(10, 2) NOT NULL
 	);
 
 -- Criação da tabela de relacionamento entre pedidos e itens
@@ -30,8 +33,8 @@ CREATE TABLE
 insert into
 	public.itens (nome_produto, valor_unitario, categoria)
 values
-	('X Burger', 5, 'Sanduíche'),
-	('X Egg', 4.5, 'Sanduíche'),
-	('X Bacon', 7, 'Sanduíche'),
+	('X Burger', 5, 'Sanduiche'),
+	('X Egg', 4.5, 'Sanduiche'),
+	('X Bacon', 7, 'Sanduiche'),
 	('Batata frita', 2, 'Acompanhamento'),
 	('Refrigerante', 2.5, 'Acompanhamento');
